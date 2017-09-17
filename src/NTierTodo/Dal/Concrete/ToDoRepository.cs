@@ -1,13 +1,13 @@
 ﻿using LiteDB;
 using NTierTodo.Dal.Abstract;
-using NTierTodo.Dal.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NTierTodo.Dal.Entities;
 
 namespace NTierTodo.Dal.Concrete
 {
-    internal sealed class ToDoRepository:IToDoRepository
+    internal sealed class ToDoRepository : IToDoRepository
     {
         private readonly string _connection;
 
@@ -23,7 +23,7 @@ namespace NTierTodo.Dal.Concrete
                 {
                     var todos = db.GetCollection<ToDo>(nameof(ToDo));
 
-                    return todos.FindOne(x=>x.Id ==id);
+                    return todos.FindOne(x => x.Id == id);
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace NTierTodo.Dal.Concrete
             {
                 var todos = db.GetCollection<ToDo>(nameof(ToDo));
 
-                todos.Delete(x=>x.Id==id);
+                todos.Delete(x => x.Id == id);
             }
         }
     }

@@ -1,12 +1,13 @@
 ﻿using NTierTodo.Bll.Abstract;
-using NTierTodo.Bll.Model;
 using NTierTodo.Dal.Abstract;
-using NTierTodo.Dal.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using NTierTodo.Bll.Dto;
+using NTierTodo.Bll.Exception;
+using NTierTodo.Dal.Entities;
 using NTierTodo.SignalR;
 
 namespace NTierTodo.Bll.Concrete
@@ -15,65 +16,81 @@ namespace NTierTodo.Bll.Concrete
     {
         private readonly IToDoRepository _repository;
         private readonly IHubContext<Notifier> _notifier;
+        private readonly IMapper _mapper;
 
-        public ToDoManager(IToDoRepository repository, IHubContext<Notifier> notifier)
+        public ToDoManager(IToDoRepository repository, IHubContext<Notifier> notifier, IMapper mapper)
         {
             _repository = repository;
             _notifier = notifier;
+            _mapper = mapper;
         }
-        public ToDoModel Get(Guid id)
+
+        private void Validate(Guid id)
         {
             if (id == default(Guid))
-                throw new ValidationException(nameof(ToDoModel.Id), "Is default!");
+                throw new ValidationException(nameof(id), "Is default!");
+        }
+
+        private void Validate(string description)
+        {
+            if (string.IsNullOrWhiteSpace(description))
+                throw new ValidationException(nameof(description), "Is null or empty");
+
+            if (description.Length < 3)
+                throw new ValidationException(nameof(description), "length < 3");
+        }
+
+        private void ValidateNotNull(ToDoDto todo)
+        {
+            if (todo == null)
+                throw new ValidationException(" ", $"todo is null");
+        }
+
+        public ToDoDto Get(Guid id)
+        {
+            Validate(id);
 
             var todo = _repository[id];
 
             if (todo == null)
                 return null;
 
-            return new ToDoModel
-            {
-                Description = new Description(todo.Description),
-                Id = todo.Id,
-                IsComplite = todo.IsComplite
-            };
+            return _mapper.Map<ToDoDto>(todo);
         }
 
-        public IEnumerable<ToDoModel> GetAll()
+        public IEnumerable<ToDoDto> GetAll()
         {
-            return _repository.All().Select(todo => new ToDoModel
-            {
-                Description = new Description(todo.Description),
-                Id = todo.Id,
-                IsComplite = todo.IsComplite
-            });
+            return _repository.All().Select(todo => _mapper.Map<ToDoDto>(todo));
         }
 
-        public ToDoModel Create(ToDoModel todo)
+        public ToDoDto Create(ToDoDto todo)
         {
+            ValidateNotNull(todo);
+            Validate(todo.Description);
+
+            var memento = _mapper.Map<ToDo>(todo);
+
             var id = Guid.NewGuid();
 
-            _repository.Create(new ToDo
-            {
-                Description = todo.Description.Value,
-                Id = id,
-                IsComplite = false,
-            });
+            memento.Id = id;
+
+            _repository.Create(memento);
 
             return this.Get(id);
         }
 
-        public void Update(ToDoModel todo)
+        public void Update(ToDoDto todo)
         {
-            if (todo.Id == default(Guid))
-                throw new ValidationException(nameof(ToDoModel.Id), "Is default!");
+            ValidateNotNull(todo);
+            Validate(todo.Id);
+            Validate(todo.Description);
 
-            _repository.Update(new ToDo
-            {
-                Description = todo.Description.Value,
-                Id = todo.Id,
-                IsComplite = false,
-            });
+            var memento = _repository[todo.Id];
+
+            //Only MakeComplite can update IsComplite prop
+            memento.Description = todo.Description;
+
+            _repository.Update(memento);
         }
 
         public void Delete(Guid id)
@@ -83,21 +100,16 @@ namespace NTierTodo.Bll.Concrete
 
         public void MakeComplite(Guid id)
         {
-            var todo = Get(id);
+            var todo = _repository[id];
 
             if (todo == null)
                 throw new ValidationException(" ", $"todo with id {id} not found");
 
-            todo.MakeComplite();
+            todo.IsComplite = true;
 
-            _repository.Update(new ToDo
-            {
-                Description = todo.Description.Value,
-                Id = todo.Id,
-                IsComplite = todo.IsComplite
-            });
+            _repository.Update(todo);
 
-            _notifier.Clients.All.InvokeAsync("Notify", todo.Description.Value + " is complete");
+            _notifier.Clients.All.InvokeAsync("Notify", todo.Description + " is complete");
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NTierTodo.Dal.Entity
+namespace NTierTodo.Dal.Entities
 {
     public class ToDo
     {

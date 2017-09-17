@@ -1,15 +1,15 @@
-﻿using NTierTodo.Bll.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using NTierTodo.Bll.Dto;
 
 namespace NTierTodo.Bll.Abstract
 {
     public interface IToDoManager
     {
-        ToDoModel Get(Guid id);
-        IEnumerable<ToDoModel> GetAll();
-        ToDoModel Create(ToDoModel todo);
-        void Update(ToDoModel todo);
+        ToDoDto Get(Guid id);
+        IEnumerable<ToDoDto> GetAll();
+        ToDoDto Create(ToDoDto todo);
+        void Update(ToDoDto todo);
         void Delete(Guid id);
         void MakeComplite(Guid id);
     }

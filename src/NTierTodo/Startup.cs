@@ -7,14 +7,12 @@ using NTierTodo.Bll.Concrete;
 using NTierTodo.Dal.Abstract;
 using NTierTodo.Dal.Concrete;
 using NTierTodo.SignalR;
+using AutoMapper;
+using NTierTodo.Bll.Dto;
+using NTierTodo.Dal.Entities;
 
 namespace NTierTodo
 {
-    using AutoMapper;
-
-    using NTierTodo.Bll.Model;
-    using NTierTodo.Dal.Entity;
-    using NTierTodo.ViewModels;
 
     public class Startup
     {
@@ -30,6 +28,7 @@ namespace NTierTodo
         {
             services.AddMvc();
             services.AddTransient<IToDoRepository>(s => new ToDoRepository("my.db"));
+            services.AddTransient<IMapper>(s => CreatMapper());
             services.AddTransient<IToDoManager, ToDoManager>();
             services.AddSignalR();
         }
@@ -45,6 +44,16 @@ namespace NTierTodo
             app.UseMvc();
 
             app.UseSignalR(b => b.MapHub<Notifier>("hub"));
+        }
+
+        public IMapper CreatMapper()
+        {
+            return new MapperConfiguration(c =>
+                {
+                    c.CreateMap<ToDo, ToDoDto>();
+                    c.CreateMap<ToDoDto, ToDo>();
+                })
+            .CreateMapper();
         }
     }
 }

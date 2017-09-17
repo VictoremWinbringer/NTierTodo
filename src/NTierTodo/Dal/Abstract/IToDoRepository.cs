@@ -1,6 +1,7 @@
-﻿using NTierTodo.Dal.Entity;
+﻿
 using System;
 using System.Collections.Generic;
+using NTierTodo.Dal.Entities;
 
 namespace NTierTodo.Dal.Abstract
 {

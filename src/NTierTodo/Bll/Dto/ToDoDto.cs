@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace NTierTodo.ViewModels
+namespace NTierTodo.Bll.Dto
 {
-    public class ToDoVm
+    public class ToDoDto
     {
         public Guid Id { get; set; }
         public string Description { get; set; }
