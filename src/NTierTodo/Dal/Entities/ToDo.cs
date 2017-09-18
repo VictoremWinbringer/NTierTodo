@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Rest;
 
 namespace NTierTodo.Dal.Entities
 {

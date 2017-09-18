@@ -25,31 +25,8 @@ namespace NTierTodo.Bll.Concrete
             _mapper = mapper;
         }
 
-        private void Validate(Guid id)
-        {
-            if (id == default(Guid))
-                throw new ValidationException(nameof(id), "Is default!");
-        }
-
-        private void Validate(string description)
-        {
-            if (string.IsNullOrWhiteSpace(description))
-                throw new ValidationException(nameof(description), "Is null or empty");
-
-            if (description.Length < 3)
-                throw new ValidationException(nameof(description), "length < 3");
-        }
-
-        private void ValidateNotNull(ToDoDto todo)
-        {
-            if (todo == null)
-                throw new ValidationException(" ", $"todo is null");
-        }
-
         public ToDoDto Get(Guid id)
         {
-            Validate(id);
-
             var todo = _repository[id];
 
             if (todo == null)
@@ -65,9 +42,6 @@ namespace NTierTodo.Bll.Concrete
 
         public ToDoDto Create(ToDoDto todo)
         {
-            ValidateNotNull(todo);
-            Validate(todo.Description);
-
             var memento = _mapper.Map<ToDo>(todo);
 
             var id = Guid.NewGuid();
@@ -81,10 +55,6 @@ namespace NTierTodo.Bll.Concrete
 
         public void Update(ToDoDto todo)
         {
-            ValidateNotNull(todo);
-            Validate(todo.Id);
-            Validate(todo.Description);
-
             var memento = _repository[todo.Id];
 
             //Only MakeComplite can update IsComplite prop
@@ -101,9 +71,6 @@ namespace NTierTodo.Bll.Concrete
         public void MakeComplite(Guid id)
         {
             var todo = _repository[id];
-
-            if (todo == null)
-                throw new ValidationException(" ", $"todo with id {id} not found");
 
             todo.IsComplite = true;
 

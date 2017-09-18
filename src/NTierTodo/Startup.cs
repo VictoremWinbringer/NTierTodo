@@ -8,7 +8,10 @@ using NTierTodo.Dal.Abstract;
 using NTierTodo.Dal.Concrete;
 using NTierTodo.SignalR;
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using NTierTodo.Bll.Dto;
+using NTierTodo.Bll.Validator;
 using NTierTodo.Dal.Entities;
 
 namespace NTierTodo
@@ -26,11 +29,12 @@ namespace NTierTodo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().AddFluentValidation();
             services.AddTransient<IToDoRepository>(s => new ToDoRepository("my.db"));
-            services.AddTransient<IMapper>(s => CreatMapper());
+            services.AddSingleton<IMapper>(s => CreatMapper());
             services.AddTransient<IToDoManager, ToDoManager>();
             services.AddSignalR();
+            services.AddTransient<IValidator<ToDoDto>, TodoValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +50,7 @@ namespace NTierTodo
             app.UseSignalR(b => b.MapHub<Notifier>("hub"));
         }
 
-        public IMapper CreatMapper()
+        private IMapper CreatMapper()
         {
             return new MapperConfiguration(c =>
                 {

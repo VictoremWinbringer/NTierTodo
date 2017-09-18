@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NTierTodo.Bll.Abstract;
 using NTierTodo.Bll.Dto;
-using NTierTodo.Bll.Exception;
 using System;
 using System.Linq;
+using FluentValidation.AspNetCore;
 using NTierTodo.Filters;
 
 namespace NTierTodo.Controllers
@@ -23,92 +23,47 @@ namespace NTierTodo.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var result = _manager.GetAll();
-
-            return Ok(result.ToList());
+            return Ok(_manager.GetAll().ToList());
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(Guid id)
         {
-            try
-            {
-                return Ok(_manager.Get(id));
-            }
-            catch (ValidationException e)
-            {
-                ModelState.AddModelError(e.Property, e.Message);
-
-                return BadRequest(ModelState);
-            }
+            return Ok(_manager.Get(id));
         }
 
 
         [HttpPost]
         public IActionResult Post([FromBody]ToDoDto value)
         {
-            try
-            {
-                return Ok(_manager.Create(value));
-            }
-            catch (ValidationException e)
-            {
-                ModelState.AddModelError(e.Property, e.Message);
-
-                return BadRequest(ModelState);
-            }
+            return Ok(_manager.Create(value));
         }
 
         [HttpPost("{id}/[action]")]
         public IActionResult MakeComplite(Guid id)
         {
-            try
-            {
-                _manager.MakeComplite(id);
+            _manager.MakeComplite(id);
 
-                return Ok();
-            }
-            catch (ValidationException e)
-            {
-                ModelState.AddModelError(e.Property, e.Message);
-
-                return BadRequest(ModelState);
-            }
+            return Ok();
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(Guid id, [FromBody]ToDoDto value)
+        public IActionResult Put(Guid id, [FromBody, /*CustomizeValidator(RuleSet = "Update")*/]ToDoDto value)
         {
-            try
-            {
-                _manager.Update(value);
+            value.Id = id;
 
-                return Ok();
-            }
-            catch (ValidationException e)
-            {
-                ModelState.AddModelError(e.Property, e.Message);
+            _manager.Update(value);
 
-                return BadRequest(ModelState);
-            }
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            try
-            {
-                _manager.Delete(id);
+            _manager.Delete(id);
 
-                return Ok();
-            }
-            catch (ValidationException e)
-            {
-                ModelState.AddModelError(e.Property, e.Message);
-
-                return BadRequest(ModelState);
-            }
+            return Ok();
         }
     }
 }
