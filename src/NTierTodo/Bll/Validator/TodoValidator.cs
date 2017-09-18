@@ -13,14 +13,14 @@ namespace NTierTodo.Bll.Validator
         public TodoValidator(IToDoRepository repository)
         {
             RuleFor(t => t.Description).NotEmpty()
-                .WithErrorCode(string.Format(Properties.Resource.ResourceManager.GetString("IsNullOrEmpty"), nameof(ToDoDto.Description)));
+                .WithMessage(string.Format(Properties.Resource.ResourceManager.GetString("IsNullOrEmpty"), nameof(ToDoDto.Description)));
             RuleFor(t => t.Description).MinimumLength(MIN_DESCRIPTION_LENGTH)
-                .WithErrorCode(string.Format(Properties.Resource.ResourceManager.GetString("MinLength"),
+               .WithMessage(string.Format(Properties.Resource.ResourceManager.GetString("MinLength"),
                     nameof(ToDoDto.Description), MIN_DESCRIPTION_LENGTH));
             RuleFor(t => t.Description).MaximumLength(MAX_DESCRIPTION_LENGTH)
-                .WithErrorCode(string.Format(Properties.Resource.ResourceManager.GetString("MaxLength"), nameof(ToDoDto.Description), MAX_DESCRIPTION_LENGTH));
+                .WithMessage(string.Format(Properties.Resource.ResourceManager.GetString("MaxLength"), nameof(ToDoDto.Description), MAX_DESCRIPTION_LENGTH));
             RuleFor(t => t.Description).Must(t => repository.All().All(todo => todo.Description != t))
-                .WithErrorCode(string.Format(Properties.Resource.ResourceManager.GetString("NotUnique"), nameof(ToDoDto.Description)));
+                .WithMessage(string.Format(Properties.Resource.ResourceManager.GetString("NotUnique"), nameof(ToDoDto.Description)));
         }
     }
 }
