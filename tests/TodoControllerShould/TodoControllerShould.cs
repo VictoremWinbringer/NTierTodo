@@ -6,8 +6,12 @@ using NTierTodo.Bll.Dto;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.WebSockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Sockets.Internal;
 using Xunit;
 using static Newtonsoft.Json.JsonConvert;
 namespace TodoControllerShould
@@ -60,6 +64,15 @@ namespace TodoControllerShould
         private async Task<ToDoDto> FromContent(HttpContent content)
         {
             return FromJson(await content.ReadAsStringAsync());
+        }
+
+        private async Task<ToDoDto> Get(Guid id, HttpClient client)
+        {
+            var response = await client.GetAsync(_root + id);
+
+            response.EnsureSuccessStatusCode();
+
+            return await FromContent(response.Content);
         }
 
         private async Task<ToDoDto> Get(Guid id)
@@ -204,23 +217,55 @@ namespace TodoControllerShould
                 Description = "MakeComplete"
             };
 
-            var create = await _client.PostAsync(_root, CreateContent(todo));
+            var url = "http://localhost:8888/";
+
+            var server = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .UseUrls(url)
+                .Build();
+
+            Task.Run(() =>
+            {
+                server.Start();
+            });
+
+            var connection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:8888/hub")
+                .WithConsoleLogger()
+                .Build();
+
+            connection.On<string>("Notify", data =>
+            {
+                Assert.Equal(todo.Description + " is complete", data);
+            });
+
+            await connection.StartAsync();
+
+            var client = new HttpClient();
+
+            client.BaseAddress = new Uri(url);
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var create = await client.PostAsync(_root, CreateContent(todo));
 
             create.EnsureSuccessStatusCode();
 
             var id = (await FromContent(create.Content)).Id;
 
-            var response = await _client.PostAsync(_root + id + "/MakeComplete", new StringContent(""));
+            var response = await client.PostAsync(_root + id + "/MakeComplete", new StringContent(""));
 
             response.EnsureSuccessStatusCode();
 
-            var result = await Get(id);
+            var result = await Get(id, client);
 
             Assert.Equal(id, result.Id);
             Assert.Equal(todo.Description, result.Description);
             Assert.Equal(true, result.IsComplite);
 
-            await _client.DeleteAsync(_root + id);
+            await client.DeleteAsync(_root + id);
         }
 
         private async Task Delete()
