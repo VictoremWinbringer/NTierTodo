@@ -72,6 +72,9 @@ namespace NTierTodo.Bll.Concrete
         {
             var todo = _repository[id];
 
+            if (todo.IsComplite)
+                return;
+
             todo.IsComplite = true;
 
             _repository.Update(todo);
