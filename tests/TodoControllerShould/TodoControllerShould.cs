@@ -1,17 +1,18 @@
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.TestHost;
-using NTierTodo;
-using NTierTodo.Bll.Dto;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.TestHost;
+using Newtonsoft.Json;
+using NTierTodo;
+using NTierTodo.Bll.Dto;
 using Xunit;
-using static Newtonsoft.Json.JsonConvert;
-namespace TodoControllerShould
+
+namespace NTierTodoTests
 {
     public class TodoControllerShould : IDisposable
     {
@@ -45,12 +46,12 @@ namespace TodoControllerShould
 
         private string ToJson(ToDoDto todo)
         {
-            return SerializeObject(todo);
+            return JsonConvert.SerializeObject(todo);
         }
 
         private ToDoDto FromJson(string todo)
         {
-            return DeserializeObject<ToDoDto>(todo);
+            return JsonConvert.DeserializeObject<ToDoDto>(todo);
         }
 
         private StringContent CreateContent(ToDoDto todo)
@@ -174,7 +175,7 @@ namespace TodoControllerShould
 
             result.EnsureSuccessStatusCode();
 
-            var array = DeserializeObject<ToDoDto[]>(await result.Content.ReadAsStringAsync());
+            var array = JsonConvert.DeserializeObject<ToDoDto[]>(await result.Content.ReadAsStringAsync());
 
             Assert.Contains(array, x => x.Id == _todo.Id);
 
@@ -275,7 +276,7 @@ namespace TodoControllerShould
 
             result.EnsureSuccessStatusCode();
 
-            var array = DeserializeObject<ToDoDto[]>(await result.Content.ReadAsStringAsync());
+            var array = JsonConvert.DeserializeObject<ToDoDto[]>(await result.Content.ReadAsStringAsync());
 
             Assert.DoesNotContain(array, x => x.Id == _todo.Id);
         }
