@@ -9,7 +9,6 @@ using NTierTodo.Filters;
 namespace NTierTodo.Controllers
 {
     [ValidateModel]
-    [ValidateTodoExists]
     [Route("api/v1/[controller]")]
     public class ToDoController : Controller
     {
@@ -27,6 +26,7 @@ namespace NTierTodo.Controllers
         }
 
         [HttpGet("{id}")]
+        [ValidateTodoExists]
         public IActionResult Get(Guid id)
         {
             return Ok(_manager.Get(id));
@@ -40,7 +40,8 @@ namespace NTierTodo.Controllers
         }
 
         [HttpPost("{id}/[action]")]
-        public IActionResult MakeComplite(Guid id)
+        [ValidateTodoExists]
+        public IActionResult MakeComplete(Guid id)
         {
             _manager.MakeComplite(id);
 
@@ -49,6 +50,7 @@ namespace NTierTodo.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
+        [ValidateTodoExists]
         public IActionResult Put(Guid id, [FromBody, /*CustomizeValidator(RuleSet = "Update")*/]ToDoDto value)
         {
             value.Id = id;
