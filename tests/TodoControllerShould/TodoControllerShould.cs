@@ -127,7 +127,7 @@ namespace TodoControllerShould
         }
 
         [Fact]
-        public async Task Not_Create_Null_Or_Empty_Description()
+        public async Task Not_Create_Empty_Description()
         {
             var todo = new ToDoDto
             {
@@ -278,6 +278,38 @@ namespace TodoControllerShould
             var array = DeserializeObject<ToDoDto[]>(await result.Content.ReadAsStringAsync());
 
             Assert.DoesNotContain(array, x => x.Id == _todo.Id);
+        }
+
+        [Fact]
+        public async Task Get_Not_Accept_Default_Id()
+        {
+            var result = await _client.GetAsync(_root + default(Guid));
+
+            Assert.True(!result.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task Delete_Accept_Default_Id()
+        {
+            var result = await _client.DeleteAsync(_root + default(Guid));
+
+            result.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async Task Put_Not_Accept_Default_Id()
+        {
+            var result = await _client.PutAsync(_root + default(Guid), CreateContent(_todo));
+
+            Assert.True(!result.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task MakeComplete_Not_Accept_Default_Id()
+        {
+            var result = await _client.PostAsync(_root + default(Guid) + "/MakeComplete", new StringContent(""));
+
+            Assert.True(!result.IsSuccessStatusCode);
         }
 
         public void Dispose()
