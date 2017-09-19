@@ -31,7 +31,7 @@ namespace NTierTodo
         {
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IToDoRepository>(s => new ToDoRepository("my.db"));
-            services.AddSingleton<IMapper>(s => CreatMapper());
+            services.AddSingleton<IMapper>(s => CreateMapper());
             services.AddTransient<IToDoManager, ToDoManager>();
             services.AddSignalR();
             services.AddTransient<IValidator<ToDoDto>, TodoValidator>();
@@ -50,7 +50,7 @@ namespace NTierTodo
             app.UseSignalR(b => b.MapHub<Notifier>("hub"));
         }
 
-        private IMapper CreatMapper()
+        private IMapper CreateMapper()
         {
             return new MapperConfiguration(c =>
                 {

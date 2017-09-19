@@ -9,18 +9,20 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Xunit;
 using static Newtonsoft.Json.JsonConvert;
 namespace TodoControllerShould
 {
     public class TodoControllerShould
     {
-        private HttpClient _client;
-        private ToDoDto _todo;
-        private string _root;
+        private readonly HttpClient _client;
+        private readonly ToDoDto _todo;
+        private readonly string _root;
+
         public TodoControllerShould()
         {
-            _client = GetClient();
+            _client = GetHttpClient();
 
             _todo = new ToDoDto
             {
@@ -66,8 +68,68 @@ namespace TodoControllerShould
             await ReadAll();
             await Read();
             await Update();
-            await MakeComplete();
             await Delete();
+        }
+
+
+        [Fact]
+        public async Task Not_Create_Duplicate_Description()
+        {
+            var todo = new ToDoDto
+            {
+                Description = "Ololosh"
+            };
+
+            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await FromContent(response.Content);
+
+            var duplicate = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+
+            await _client.DeleteAsync(_root + result.Id);
+
+            Assert.NotEqual(true, duplicate.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task Not_Create_Too_Short_Description()
+        {
+            var todo = new ToDoDto
+            {
+                Description = "O"
+            };
+
+            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+
+            Assert.NotEqual(true, response.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task Not_Create_Null_Or_Empty_Description()
+        {
+            var todo = new ToDoDto
+            {
+                Description = "       "
+            };
+
+            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+
+            Assert.NotEqual(true, response.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task Not_Create_Nul_Description()
+        {
+            var todo = new ToDoDto
+            {
+                Description = null
+            };
+
+            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+
+            Assert.NotEqual(true, response.IsSuccessStatusCode);
         }
 
         private async Task Create()
@@ -112,7 +174,7 @@ namespace TodoControllerShould
             _todo.Description = "Foo Bar Baz";
             _todo.IsComplite = true;
 
-            var response = await _client.PutAsync(_root, CreateContent(ToJson(_todo)));
+            var response = await _client.PutAsync(_root + _todo.Id, CreateContent(ToJson(_todo)));
 
             response.EnsureSuccessStatusCode();
 
@@ -123,17 +185,31 @@ namespace TodoControllerShould
             Assert.NotEqual(_todo.IsComplite, result.IsComplite);
         }
 
+        [Fact]
         private async Task MakeComplete()
         {
-            var response = await _client.PostAsync(_root + _todo.Id + "/MakeComplete", new StringContent(""));
+            var todo = new ToDoDto
+            {
+                Description = "MakeComplete"
+            };
+
+            var create = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+
+            create.EnsureSuccessStatusCode();
+
+            var id =(await FromContent(create.Content)).Id;
+
+            var response = await _client.PostAsync(_root + id + "/MakeComplete", new StringContent(""));
 
             response.EnsureSuccessStatusCode();
 
-            var result = await Get(_todo.Id);
+            var result = await Get(id);
 
-            Assert.Equal(_todo.Id, result.Id);
-            Assert.Equal(_todo.Description, result.Description);
+            Assert.Equal(id, result.Id);
+            Assert.Equal(todo.Description, result.Description);
             Assert.Equal(true, result.IsComplite);
+
+            await _client.DeleteAsync(_root + id);
         }
 
         private async Task Delete()
@@ -151,14 +227,11 @@ namespace TodoControllerShould
             Assert.DoesNotContain(array, x => x.Id == _todo.Id);
         }
 
-        protected HttpClient GetClient()
+        private HttpClient GetHttpClient()
         {
-            var builder = new WebHostBuilder()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<Startup>()
-                .UseEnvironment("Testing");
+            var server = new TestServer(WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>());
 
-            var server = new TestServer(builder);
             var client = server.CreateClient();
 
             // client always expects json results
