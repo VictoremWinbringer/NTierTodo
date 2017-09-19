@@ -18,6 +18,7 @@ namespace TodoControllerShould
         private readonly ToDoDto _todo;
         private readonly string _root;
         private readonly TestServer _server;
+
         public TodoControllerShould()
         {
             var server = new TestServer(WebHost.CreateDefaultBuilder()
@@ -51,9 +52,9 @@ namespace TodoControllerShould
             return DeserializeObject<ToDoDto>(todo);
         }
 
-        private StringContent CreateContent(string json)
+        private StringContent CreateContent(ToDoDto todo)
         {
-            return new StringContent(json, Encoding.UTF8, "application/json");
+            return new StringContent(ToJson(todo), Encoding.UTF8, "application/json");
         }
 
         private async Task<ToDoDto> FromContent(HttpContent content)
@@ -89,13 +90,13 @@ namespace TodoControllerShould
                 Description = "Ololosh"
             };
 
-            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+            var response = await _client.PostAsync(_root, CreateContent(todo));
 
             response.EnsureSuccessStatusCode();
 
             var result = await FromContent(response.Content);
 
-            var duplicate = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+            var duplicate = await _client.PostAsync(_root, CreateContent(todo));
 
             await _client.DeleteAsync(_root + result.Id);
 
@@ -110,7 +111,7 @@ namespace TodoControllerShould
                 Description = "O"
             };
 
-            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+            var response = await _client.PostAsync(_root, CreateContent(todo));
 
             Assert.NotEqual(true, response.IsSuccessStatusCode);
         }
@@ -123,7 +124,7 @@ namespace TodoControllerShould
                 Description = "       "
             };
 
-            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+            var response = await _client.PostAsync(_root, CreateContent(todo));
 
             Assert.NotEqual(true, response.IsSuccessStatusCode);
         }
@@ -136,14 +137,14 @@ namespace TodoControllerShould
                 Description = null
             };
 
-            var response = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+            var response = await _client.PostAsync(_root, CreateContent(todo));
 
             Assert.NotEqual(true, response.IsSuccessStatusCode);
         }
 
         private async Task Create()
         {
-            var response = await _client.PostAsync(_root, CreateContent(ToJson(_todo)));
+            var response = await _client.PostAsync(_root, CreateContent(_todo));
 
             response.EnsureSuccessStatusCode();
 
@@ -183,7 +184,7 @@ namespace TodoControllerShould
             _todo.Description = "Foo Bar Baz";
             _todo.IsComplite = true;
 
-            var response = await _client.PutAsync(_root + _todo.Id, CreateContent(ToJson(_todo)));
+            var response = await _client.PutAsync(_root + _todo.Id, CreateContent(_todo));
 
             response.EnsureSuccessStatusCode();
 
@@ -203,7 +204,7 @@ namespace TodoControllerShould
                 Description = "MakeComplete"
             };
 
-            var create = await _client.PostAsync(_root, CreateContent(ToJson(todo)));
+            var create = await _client.PostAsync(_root, CreateContent(todo));
 
             create.EnsureSuccessStatusCode();
 
