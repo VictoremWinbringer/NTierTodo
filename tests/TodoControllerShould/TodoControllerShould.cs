@@ -1,27 +1,13 @@
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
 using NTierTodo;
 using NTierTodo.Bll.Dto;
 using System;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.WebSockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.SignalR.Internal.Protocol;
-using Microsoft.AspNetCore.Sockets;
-using Microsoft.AspNetCore.Sockets.Client;
-using Microsoft.Rest.Azure;
 using Xunit;
 using static Newtonsoft.Json.JsonConvert;
 namespace TodoControllerShould
@@ -31,7 +17,6 @@ namespace TodoControllerShould
         private readonly HttpClient _client;
         private readonly ToDoDto _todo;
         private readonly string _root;
-        private readonly WebSocketClient _ws;
         private readonly TestServer _server;
         public TodoControllerShould()
         {
@@ -39,16 +24,12 @@ namespace TodoControllerShould
                 .UseStartup<Startup>());
 
             var client = server.CreateClient();
-            var ws = server.CreateWebSocketClient();
 
-            // client always expects json results
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
 
             _client = client;
-
-            _ws = server.CreateWebSocketClient();
 
             _server = server;
 
@@ -212,7 +193,7 @@ namespace TodoControllerShould
             Assert.Equal(_todo.Description, result.Description);
             Assert.NotEqual(_todo.IsComplite, result.IsComplite);
         }
-        
+
 
         [Fact]
         public async Task MakeComplete()
