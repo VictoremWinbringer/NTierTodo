@@ -1,17 +1,14 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.TestHost;
 using NTierTodo;
 using NTierTodo.Bll.Dto;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.WebSockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.Sockets.Internal;
 using Xunit;
 using static Newtonsoft.Json.JsonConvert;
 namespace TodoControllerShould
