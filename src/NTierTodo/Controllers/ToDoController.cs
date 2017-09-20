@@ -48,6 +48,12 @@ namespace NTierTodo.Controllers
             return Ok();
         }
 
+        [HttpGet("[action]")]
+        public IActionResult Count()
+        {
+            return Ok(_manager.GetAll().Count());
+        }
+
         // PUT api/values/5
         [HttpPut("{id}")]
         [ValidateTodoExists]

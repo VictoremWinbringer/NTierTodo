@@ -92,6 +92,30 @@ namespace NTierTodoTests
             await Delete();
         }
 
+        [Fact]
+        public async Task Count_Equal_1()
+        {
+            var todo = new ToDoDto
+            {
+                Description = "One"
+            }; 
+
+            var response = await _client.PostAsync(_root, CreateContent(todo));
+
+            response.EnsureSuccessStatusCode();
+
+            var created = await FromContent(response.Content);
+
+            response = await _client.GetAsync(_root + "count");
+
+            response.EnsureSuccessStatusCode();
+
+            var result = int.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(1, result);
+
+            await _client.DeleteAsync(_root + created.Id);
+        }
 
         [Fact]
         public async Task Not_Create_Duplicate_Description()
@@ -264,6 +288,7 @@ namespace NTierTodoTests
             Assert.Equal(true, result.IsComplite);
 
             await client.DeleteAsync(_root + id);
+
         }
 
         private async Task Delete()
