@@ -1,6 +1,7 @@
 ﻿using LiteDB;
 using NTierTodo.Dal.Abstract;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NTierTodo.Dal.Entities;
@@ -28,7 +29,7 @@ namespace NTierTodo.Dal.Concrete
             }
         }
 
-        public IEnumerable<ToDo> All()
+        private IEnumerable<ToDo> All()
         {
             using (var db = new LiteDatabase(_connection))
             {
@@ -66,6 +67,16 @@ namespace NTierTodo.Dal.Concrete
 
                 todos.Delete(x => x.Id == id);
             }
+        }
+
+        public IEnumerator<ToDo> GetEnumerator()
+        {
+            return this.All().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

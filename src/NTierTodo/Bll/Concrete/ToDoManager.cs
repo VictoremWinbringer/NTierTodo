@@ -37,7 +37,7 @@ namespace NTierTodo.Bll.Concrete
 
         public IEnumerable<ToDoDto> GetAll()
         {
-            return _repository.All().Select(todo => _mapper.Map<ToDoDto>(todo));
+            return _repository.Select(todo => _mapper.Map<ToDoDto>(todo));
         }
 
         public ToDoDto Create(ToDoDto todo)

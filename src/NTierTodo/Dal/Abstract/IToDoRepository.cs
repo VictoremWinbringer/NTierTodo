@@ -5,10 +5,9 @@ using NTierTodo.Dal.Entities;
 
 namespace NTierTodo.Dal.Abstract
 {
-    public interface IToDoRepository
+    public interface IToDoRepository : IEnumerable<ToDo>
     {
         ToDo this[Guid id] { get; }
-        IEnumerable<ToDo> All();
         void Create(ToDo todo);
         void Update(ToDo todo);
         void Delete(Guid id);

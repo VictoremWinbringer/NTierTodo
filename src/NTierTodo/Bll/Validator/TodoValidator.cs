@@ -19,7 +19,7 @@ namespace NTierTodo.Bll.Validator
                     nameof(ToDoDto.Description), MIN_DESCRIPTION_LENGTH));
             RuleFor(t => t.Description).MaximumLength(MAX_DESCRIPTION_LENGTH)
                 .WithMessage(string.Format(Properties.Resource.ResourceManager.GetString("MaxLength"), nameof(ToDoDto.Description), MAX_DESCRIPTION_LENGTH));
-            RuleFor(t => t.Description).Must(t => repository.All().All(todo => todo.Description != t))
+            RuleFor(t => t.Description).Must(t => repository.All(todo => todo.Description != t))
                 .WithMessage(string.Format(Properties.Resource.ResourceManager.GetString("NotUnique"), nameof(ToDoDto.Description)));
         }
     }
