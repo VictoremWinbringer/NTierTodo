@@ -98,7 +98,7 @@ namespace NTierTodoTests
             var todo = new ToDoDto
             {
                 Description = "One"
-            }; 
+            };
 
             var response = await _client.PostAsync(_root, CreateContent(todo));
 
@@ -112,9 +112,9 @@ namespace NTierTodoTests
 
             var result = int.Parse(await response.Content.ReadAsStringAsync());
 
-            Assert.Equal(1, result);
-
             await _client.DeleteAsync(_root + created.Id);
+
+            Assert.Equal(1, result);
         }
 
         [Fact]
@@ -188,7 +188,7 @@ namespace NTierTodoTests
             Assert.NotNull(result);
             Assert.NotEqual(default(Guid), result.Id);
             Assert.Equal(_todo.Description, result.Description);
-            Assert.Equal(false, result.IsComplite);
+            Assert.Equal(false, result.IsComplete);
 
             _todo.Id = result.Id;
         }
@@ -211,13 +211,13 @@ namespace NTierTodoTests
 
             Assert.Equal(_todo.Id, result.Id);
             Assert.Equal(_todo.Description, result.Description);
-            Assert.Equal(_todo.IsComplite, result.IsComplite);
+            Assert.Equal(_todo.IsComplete, result.IsComplete);
         }
 
         private async Task Update()
         {
             _todo.Description = "Foo Bar Baz";
-            _todo.IsComplite = true;
+            _todo.IsComplete = true;
 
             var response = await _client.PutAsync(_root + _todo.Id, CreateContent(_todo));
 
@@ -227,7 +227,7 @@ namespace NTierTodoTests
 
             Assert.Equal(_todo.Id, result.Id);
             Assert.Equal(_todo.Description, result.Description);
-            Assert.NotEqual(_todo.IsComplite, result.IsComplite);
+            Assert.NotEqual(_todo.IsComplete, result.IsComplete);
         }
 
 
@@ -283,12 +283,11 @@ namespace NTierTodoTests
 
             var result = await Get(id, client);
 
-            Assert.Equal(id, result.Id);
-            Assert.Equal(todo.Description, result.Description);
-            Assert.Equal(true, result.IsComplite);
-
             await client.DeleteAsync(_root + id);
 
+            Assert.Equal(id, result.Id);
+            Assert.Equal(todo.Description, result.Description);
+            Assert.Equal(true, result.IsComplete);
         }
 
         private async Task Delete()

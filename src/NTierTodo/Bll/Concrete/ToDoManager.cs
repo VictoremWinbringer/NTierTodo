@@ -1,14 +1,13 @@
-﻿using NTierTodo.Bll.Abstract;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
+using NTierTodo.Bll.Abstract;
+using NTierTodo.Bll.Dto;
 using NTierTodo.Dal.Abstract;
+using NTierTodo.Dal.Entities;
+using NTierTodo.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
-using Microsoft.AspNetCore.SignalR;
-using NTierTodo.Bll.Dto;
-using NTierTodo.Bll.Exception;
-using NTierTodo.Dal.Entities;
-using NTierTodo.SignalR;
 
 namespace NTierTodo.Bll.Concrete
 {
