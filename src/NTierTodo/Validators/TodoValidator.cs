@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using FluentValidation;
-using NTierTodo.Bll.Dto;
 using NTierTodo.Dal.Abstract;
 
-namespace NTierTodo.Bll.Validator
+namespace NTierTodo.Bll
 {
     public class TodoValidator : AbstractValidator<ToDoDto>
     {

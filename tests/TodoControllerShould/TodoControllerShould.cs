@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using NTierTodo;
-using NTierTodo.Bll.Dto;
+using NTierTodo.Bll;
 using Xunit;
 
 namespace NTierTodoTests

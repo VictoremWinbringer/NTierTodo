@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NTierTodo.Bll.Abstract;
-using NTierTodo.Bll.Dto;
 using System;
 using System.Linq;
 using FluentValidation.AspNetCore;
+using NTierTodo.Bll;
 using NTierTodo.Filters;
 
 namespace NTierTodo.Controllers

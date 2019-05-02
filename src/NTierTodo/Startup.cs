@@ -2,16 +2,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NTierTodo.Bll.Abstract;
-using NTierTodo.Bll.Concrete;
 using NTierTodo.Dal.Abstract;
 using NTierTodo.Dal.Concrete;
 using NTierTodo.SignalR;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using NTierTodo.Bll.Dto;
-using NTierTodo.Bll.Validator;
+using NTierTodo.Bll;
 using NTierTodo.Dal.Entities;
 
 namespace NTierTodo

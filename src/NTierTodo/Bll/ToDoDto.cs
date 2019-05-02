@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NTierTodo.Bll.Dto
+namespace NTierTodo.Bll
 {
     public class ToDoDto
     {

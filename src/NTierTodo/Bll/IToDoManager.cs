@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using NTierTodo.Bll.Dto;
 
-namespace NTierTodo.Bll.Abstract
+namespace NTierTodo.Bll
 {
     public interface IToDoManager
     {

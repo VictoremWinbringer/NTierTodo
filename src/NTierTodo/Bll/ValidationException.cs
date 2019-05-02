@@ -1,10 +1,10 @@
 ﻿namespace NTierTodo.Bll.Exception
 {
-    public class ValidationException : System.Exception
+    public class TodoValidationException : System.Exception
     {
         public string Property { get; }
 
-        public ValidationException(string property, string message) : base(message)
+        public TodoValidationException(string property)
         {
             Property = property;
         }

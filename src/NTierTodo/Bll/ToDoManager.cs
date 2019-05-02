@@ -1,15 +1,15 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.SignalR;
-using NTierTodo.Bll.Abstract;
-using NTierTodo.Bll.Dto;
+using NTierTodo.Bll.Exception;
 using NTierTodo.Dal.Abstract;
 using NTierTodo.Dal.Entities;
 using NTierTodo.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace NTierTodo.Bll.Concrete
+namespace NTierTodo.Bll
 {
     public class ToDoManager : IToDoManager
     {
@@ -46,6 +46,9 @@ namespace NTierTodo.Bll.Concrete
             var id = Guid.NewGuid();
 
             memento.Id = id;
+            
+            if(string.IsNullOrWhiteSpace(todo.Description))
+                throw new TodoValidationException(nameof(todo.Description));
 
             _repository.Create(memento);
 
@@ -57,6 +60,9 @@ namespace NTierTodo.Bll.Concrete
             var memento = _repository[todo.Id];
 
             //Only MakeComplite can update IsComplite prop
+            if(string.IsNullOrWhiteSpace(todo.Description))
+                throw new TodoValidationException(nameof(todo.Description));
+            
             memento.Description = todo.Description;
 
             _repository.Update(memento);
