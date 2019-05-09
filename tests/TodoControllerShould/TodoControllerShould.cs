@@ -239,7 +239,7 @@ namespace NTierTodoTests
                 Description = "MakeComplete"
             };
 
-            var url = "http://localhost:8888/";
+            var url = "http://localhost:28888/";
 
             var server = WebHost.CreateDefaultBuilder()
                 .UseStartup<Startup>()
@@ -252,7 +252,7 @@ namespace NTierTodoTests
             });
 
             var connection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:8888/hub")
+                .WithUrl("http://localhost:28888/hub")
                 .WithConsoleLogger()
                 .Build();
 

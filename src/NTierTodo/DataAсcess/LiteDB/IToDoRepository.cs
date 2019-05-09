@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NTierTodo.Dal.Entities;
 
-namespace NTierTodo.Dal.Abstract
+namespace NTierTodo.Dal
 {
     public interface IToDoRepository : IEnumerable<ToDo>
     {

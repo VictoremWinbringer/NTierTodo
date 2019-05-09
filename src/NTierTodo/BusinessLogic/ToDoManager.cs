@@ -2,25 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using FluentValidation;
-using Microsoft.AspNetCore.SignalR;
 using NTierTodo.Bll.Exception;
-using NTierTodo.Dal.Abstract;
+using NTierTodo.Dal;
 using NTierTodo.Dal.Entities;
-using NTierTodo.SignalR;
 
 namespace NTierTodo.Bll
 {
     public class ToDoManager : IToDoManager
     {
         private readonly IToDoRepository _repository;
-        private readonly IHubContext<Notifier> _notifier;
+        private readonly IMessageNotifier _messageNotifier;
         private readonly IMapper _mapper;
 
-        public ToDoManager(IToDoRepository repository, IHubContext<Notifier> notifier, IMapper mapper)
+        public ToDoManager(IToDoRepository repository, IMessageNotifier messageNotifier, IMapper mapper)
         {
             _repository = repository;
-            _notifier = notifier;
+            _messageNotifier = messageNotifier;
             _mapper = mapper;
         }
 
@@ -84,7 +81,7 @@ namespace NTierTodo.Bll
 
             _repository.Update(todo);
 
-            _notifier.Clients.All.InvokeAsync("Notify", todo.Description + " is complete");
+            _messageNotifier.NotifyAll(todo.Description + " is complete");
         }
     }
 }

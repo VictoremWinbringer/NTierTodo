@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NTierTodo.Dal.Abstract;
 using NTierTodo.Dal.Concrete;
-using NTierTodo.SignalR;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using NTierTodo.Bll;
+using NTierTodo.Dal;
 using NTierTodo.Dal.Entities;
+using Notifier = NTierTodo.SignalR.Notifier;
 
 namespace NTierTodo
 {
@@ -32,6 +32,7 @@ namespace NTierTodo
             services.AddTransient<IToDoManager, ToDoManager>();
             services.AddSignalR();
             services.AddTransient<IValidator<ToDoDto>, TodoValidator>();
+            services.AddTransient<IMessageNotifier, SignalRMessageNotifier>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

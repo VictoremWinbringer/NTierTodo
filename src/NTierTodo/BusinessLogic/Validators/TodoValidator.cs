@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using FluentValidation;
-using NTierTodo.Dal.Abstract;
+using NTierTodo.Dal;
 
 namespace NTierTodo.Bll
 {
